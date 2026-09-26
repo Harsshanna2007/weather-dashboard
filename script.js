@@ -2,19 +2,27 @@ const apiKey = "a88309f99a0971a4eb393a27afad3335";
 
 async function getWeather() {
 
-    const city = document.getElementById("cityInput").value;
+    const city = document.getElementById("cityInput").value.trim();
 
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    if (city === "") {
+        document.getElementById("error").innerText =
+            "Please enter a city name";
+        return;
+    }
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
 
     try {
 
         const response = await fetch(url);
 
-        if (!response.ok) {
-            throw new Error("City not found");
-        }
-
         const data = await response.json();
+
+        console.log(data);
+
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
 
         document.getElementById("cityName").innerText =
             data.name;
@@ -36,6 +44,6 @@ async function getWeather() {
     } catch (error) {
 
         document.getElementById("error").innerText =
-            error.message;
+            `Error: ${error.message}`;
     }
 }
